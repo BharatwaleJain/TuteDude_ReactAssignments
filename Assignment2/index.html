@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>To Do App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f4f6fa;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4CAF50;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #388e3c;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            transition: background 0.15s, box-shadow 0.15s;
+            border-left: 4px solid #4CAF50;
+            position: relative;
+            user-select: none;
+        }
+
+        .todo-item:hover {
+            background: #f0f7f4;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.08);
+        }
+
+        .todo-title {
+            flex: 1;
+            font-size: 17px;
+            color: #333;
+            transition: color 0.15s;
+        }
+
+        .todo-item.done .todo-title {
+            color: #aaa;
+            text-decoration: line-through;
+        }
+
+        .status-badge {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 18px;
+            color: #fff;
+            background-color: #f39c12;
+            transition: background 0.2s;
+        }
+
+        .todo-item.done .status-badge {
+            background-color: #27ae60;
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            const [title, setTitle] = useState('');
+            const [todos, setTodos] = useState([]);
+            const [error, setError] = useState('');
+            const handleAdd = () => {
+                if (title.trim() === '') {
+                    setError('Task cannot be empty or contain only whitespace!');
+                    return;
+                }
+                setTodos([
+                    ...todos,
+                    {
+                        id: Date.now(),
+                        title: title.trim(),
+                        done: false
+                    }
+                ]);
+                setTitle('');
+                setError('');
+            };
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') handleAdd();
+            };
+            const toggleDone = (id) => {
+                setTodos(
+                    todos.map(todo =>
+                        todo.id === id ? { ...todo, done: !todo.done } : todo
+                    )
+                );
+            };
+            return (
+                <div>
+                    <h1>To Do App</h1>
+                    <div className="input-group">
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder="Enter your task here"
+                            aria-label="Task title"
+                        />
+                        <button onClick={handleAdd}>Add</button>
+                    </div>
+                    {error && <div className="error">{error}</div>}
+                    {todos.length > 0 ? (
+                        <ul>
+                            {todos.map(todo => (
+                                <li
+                                    key={todo.id}
+                                    className={`todo-item${todo.done ? ' done' : ''}`}
+                                    onClick={() => toggleDone(todo.id)}
+                                    tabIndex={0}
+                                    onKeyDown={e => {
+                                        if (e.key === 'Enter' || e.key === ' ') toggleDone(todo.id);
+                                    }}
+                                    aria-pressed={todo.done}
+                                    title={todo.done ? "Mark as Pending" : "Mark as Done"}
+                                >
+                                    <span className="todo-title">{todo.title}</span>
+                                    <span className="status-badge">
+                                        {todo.done ? 'Done' : 'Pending'}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No tasks yet. Add one above!</p>
+                    )}
+                </div>
+            );
+        }
+
+        const rt = ReactDOM.createRoot(document.getElementById('root'));
+        rt.render(
+            <React.StrictMode>
+            <App />
+            </React.StrictMode>
+        );
+    </script>
+</body>
+
+</html>

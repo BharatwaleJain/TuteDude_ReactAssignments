@@ -6,3 +6,8 @@ This repository contains my React assignments for the TuteDude course. Each assi
 
 ### [Assignment 1](./Assignment1/)
 Components for Counter App
+
+---
+
+### [Assignment 2](./Assignment2/)
+Simple To Do App using React
